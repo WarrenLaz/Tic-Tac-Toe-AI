@@ -85,12 +85,11 @@ while True:
                     moveRect = move.get_rect()
                     moveRect.center = rect.center
                     screen.blit(move, moveRect)
-                row.append(rect)
+                row.append (rect)
             tiles.append(row)
 
         game_over = ttt.terminal(board)
         player = ttt.player(board)
-
         # Show title
         if game_over:
             winner = ttt.winner(board)

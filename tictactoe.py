@@ -28,7 +28,6 @@ def player(board):
                 xsum+=1
             elif cell == 'O':
                 osum+=1
-
     return X if osum == xsum else O
 
 
@@ -58,9 +57,10 @@ def winner(board):
     """
     Returns the winner of the game, if there is one.
     """
-    if( utility(board)==1):
+    winner = utility(board)
+    if(winner==1):
         return X
-    elif(utility(board)==-1):
+    if(winner==-1):
         return O
     
     return None
@@ -70,7 +70,7 @@ def terminal(board):
     """
     Returns True if game is over, False otherwise.
     """
-    if(winner(board)==0):
+    if( (not(None in board[0]) and not(None in board[1]) and not(None in board[2])) or winner(board) != None):
         return True
     
     return False
@@ -88,7 +88,7 @@ def auxutility(board,sets):
 
             if(xsum == 3):
                 return 1
-            elif(osum == 3):
+            if(osum == 3):
                 return -1
         xsum = 0
         osum = 0
@@ -106,11 +106,11 @@ def utility(board):
     osum = 0
 
     vert = auxutility(board, v)
-    if vert != 0: return 1 if vert == 1 else -1
+    if vert != 0: return -1 if vert == -1 else 1
     hor = auxutility(board, h)
-    if hor != 0: return 1 if vert == 1 else -1
+    if hor != 0: return -1 if hor == -1 else 1
     diag = auxutility(board, d)
-    if diag != 0: return 1 if vert == 1 else -1
+    if diag != 0: return -1 if diag == -1 else 1
 
     return 0 
 
@@ -129,13 +129,13 @@ def createtree(board):
 def minimax(board):
     boardcop = copy.deepcopy(board)
 
-    createtree(boardcop)
+    # createtree(boardcop)
     """
-    Returns the optimal action for the current player on the board.
+    Returns the optimal action \for the current player on the board.
     """
+    for i in range(3):
+        for j in range(3):
+            if(board[i][j] == EMPTY):
+                return (i,j)
 
-print(utility(
-            [[X, O, O],
-            [O, O, X],
-            [O, X, X]]
-))
+    return None
