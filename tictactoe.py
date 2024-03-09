@@ -122,20 +122,59 @@ def minaux(board):
 def maxaux(board):
     return 1
 
-def createtree(board):
-    return board
 
 
 def minimax(board):
     boardcop = copy.deepcopy(board)
+    """
+    Returns the optimal action for the current player on the board.
+    """
+    who = player(board)
+    if who == 'O':
+        boolw = True
+    if who == 'X':
+        boolw = False
 
-    # createtree(boardcop)
-    """
-    Returns the optimal action \for the current player on the board.
-    """
+    bestscore = -999999
+    bestmove = [0,0]
     for i in range(3):
         for j in range(3):
-            if(board[i][j] == EMPTY):
-                return (i,j)
+            #is spot open
+            if boardcop[i][j] == EMPTY:
+                boardcop[i][j] = player(boardcop)
+                score = Algo(boardcop, False)
+                boardcop[i][j] = EMPTY
+                if score > bestscore:
+                    bestscore = score
+                    bestmove = [i,j]
+    return (bestmove)
 
-    return None
+def Algo(board, boolw):
+    result = utility(board)
+    #checking for winner
+    if result != 0:
+        return result
+    #ismaximizing
+    if boolw == True:
+        bestscore = -999999
+        for i in range(3):
+            for j in range(3):
+                #is spot open
+                if board[i][j] == EMPTY:
+                    board[i][j] = player(board)
+                    score = Algo(board, True)
+                    board[i][j] = EMPTY
+                    bestscore = max(score, bestscore)
+        return bestscore
+    #isminimizing
+    else:
+        bestscore = 999999
+        for i in range(3):
+            for j in range(3):
+                #is spot open
+                if board[i][j] == EMPTY:
+                    board[i][j] = player(board)
+                    score = Algo(board, False)
+                    board[i][j] = EMPTY
+                    bestscore = min(score, bestscore)
+        return bestscore
