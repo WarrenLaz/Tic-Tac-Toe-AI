@@ -20,6 +20,11 @@ def initial_state():
 
 
 def player(board):
+    """
+    Returns whether the current player is the X player or the Y player.
+    It adds up the number of 'X's and 'O's on the board and compares them.
+    If the two values are the same the current player is 'X', else it's 'O'
+    """
     xsum = 0
     osum = 0
     for column in board:
@@ -76,6 +81,9 @@ def terminal(board):
     return False
 
 def auxutility(board,sets):
+    """
+    Returns whether a 3 in a row has occured and the resulting score from the three in a row.
+    """
     xsum = 0
     osum = 0
 
