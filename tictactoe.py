@@ -21,7 +21,7 @@ def initial_state():
 
 def player(board):
     """
-    Returns whether the current player is the X player or the Y player.
+    Returns whether the current player is the 'X' player or the 'O' player.
     It adds up the number of 'X's and 'O's on the board and compares them.
     If the two values are the same the current player is 'X', else it's 'O'
     """
