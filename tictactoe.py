@@ -18,8 +18,7 @@ def initial_state():
             [EMPTY, EMPTY, EMPTY],
             [EMPTY, EMPTY, EMPTY]]
 
-
-def player(board):
+def numPieces(board):
     xsum = 0
     osum = 0
     for column in board:
@@ -28,6 +27,14 @@ def player(board):
                 xsum+=1
             elif cell == 'O':
                 osum+=1
+
+    return xsum, osum
+
+def player(board):
+    x = numPieces(board)
+    xsum = x[0]
+    osum = x[1]
+
     return X if osum == xsum else O
 
 
@@ -65,12 +72,14 @@ def winner(board):
     
     return None
 
+def isFull(board):
+    return (not(None in board[0]) and not(None in board[1]) and not(None in board[2]))
 
 def terminal(board):
     """
     Returns True if game is over, False otherwise.
     """
-    if( (not(None in board[0]) and not(None in board[1]) and not(None in board[2])) or winner(board) != None):
+    if(isFull(board) or winner(board) != None):
         return True
     
     return False
@@ -114,28 +123,64 @@ def utility(board):
 
     return 0 
 
-
+""""
+MINIMAX PART
+_______________________                                 
+"""  
             
-
-def minaux(board):
-    return 1
-def maxaux(board):
-    return 1
-
-def createtree(board):
-    return board
-
 
 def minimax(board):
     boardcop = copy.deepcopy(board)
+    """
+    Returns the optimal action for the current player on the board.
+    """
+    who = player(board)
+    if who == 'O':
+        boolw = True
+    if who == 'X':
+        boolw = False
 
-    # createtree(boardcop)
-    """
-    Returns the optimal action \for the current player on the board.
-    """
+    bestscore = -999999
+    bestmove = [0,0]
     for i in range(3):
         for j in range(3):
-            if(board[i][j] == EMPTY):
-                return (i,j)
+            #is spot open
+            if boardcop[i][j] == EMPTY:
+                boardcop[i][j] = player(boardcop)
+                score = Algo(boardcop, boolw)
+                boardcop[i][j] = EMPTY
+                if score > bestscore:
+                    bestscore = score
+                    bestmove = [i,j]
+    return (bestmove)
 
-    return None
+def Algo(board, boolw):
+    result = utility(board)
+    #checking for winner
+    if result != 0:
+        return result
+    #ismaximizing
+    if boolw == True:
+        bestscore = -999999
+        for i in range(3):
+            for j in range(3):
+                #is spot open
+                if board[i][j] == EMPTY:
+                    board[i][j] = player(board)
+                    score = Algo(board, False)
+                    board[i][j] = EMPTY
+                    bestscore = max(score, bestscore)
+                    print(bestscore)
+        return bestscore
+    #isminimizing
+    else:
+        bestscore = 999999
+        for i in range(3):
+            for j in range(3):
+                #is spot open
+                if board[i][j] == EMPTY:
+                    board[i][j] = player(board)
+                    score = Algo(board, True)
+                    board[i][j] = EMPTY
+                    bestscore = min(score, bestscore)
+        return bestscore
