@@ -85,6 +85,9 @@ def terminal(board):
     return False
 
 def auxutility(board,sets):
+    """
+    Returns whether a 3 in a row has occured and the resulting score from the three in a row.
+    """
     xsum = 0
     osum = 0
 
