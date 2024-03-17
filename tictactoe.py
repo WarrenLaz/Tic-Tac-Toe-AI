@@ -36,13 +36,20 @@ def player(board):
     osum = x[1]
 
     return X if osum == xsum else O
-
-
-def actions():
+def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board. Also returns permutations of each set corresponding to winning condtions.
     This will always be constant. O(1) complexity
     """
+    moves = []
+    for i in range(3):
+        for j in range(3):
+            if board[i][j] == EMPTY:
+                moves.append((i,j))
+
+    return moves
+
+def auxwin():
     return [[ [(0, 0), (0, 1), (0, 2)] , [(1, 0), (1, 1), (1, 2)], [(2, 0), (2, 1), (2, 2)] ], 
             [ [(0, 0), (1, 0), (2, 0)], [(0, 1), (1, 1), (2, 1)] , [(0, 2), (1, 2), (2, 2) ] ] ,
             [[(0,0), (1,1), (2,2)],[(0,2),(1,1), (2,0)]]]
@@ -110,9 +117,9 @@ def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    v = actions()[0] # vertical
-    h = actions()[1] # horizontal
-    d = actions()[2] # diagonal
+    v = auxwin()[0] # vertical
+    h = auxwin()[1] # horizontal
+    d = auxwin()[2] # diagonal
 
     xsum = 0
     osum = 0
@@ -130,60 +137,50 @@ def utility(board):
 MINIMAX PART
 _______________________                                 
 """  
-            
-
 def minimax(board):
-    boardcop = copy.deepcopy(board)
     """
     Returns the optimal action for the current player on the board.
     """
-    who = player(board)
-    if who == 'O':
-        boolw = True
-    if who == 'X':
-        boolw = False
+    boardcopy = copy.deepcopy(board)
+    bestscore = -1000
+    bestmove = (0,0)
 
-    bestscore = -999999
-    bestmove = [0,0]
-    for i in range(3):
-        for j in range(3):
-            #is spot open
-            if boardcop[i][j] == EMPTY:
-                boardcop[i][j] = player(boardcop)
-                score = Algo(boardcop, boolw)
-                boardcop[i][j] = EMPTY
-                if score > bestscore:
-                    bestscore = score
-                    bestmove = [i,j]
+    for a in actions(boardcopy):
+        boardcopy[a[0]][a[1]] = player(boardcopy)
+        score = Auxmm(boardcopy, 0, False)
+        board[a[0]][a[1]] == EMPTY
+        if score > bestscore:
+            bestscore = score
+            bestmove = (a[0],a[1])
+
     return (bestmove)
 
-def Algo(board, boolw):
-    result = utility(board)
+def Auxmm(board, depth, p):
+    score = utility(board)
     #checking for winner
-    if result != 0:
-        return result
+    if score != 0:
+        return score
+    if score == 1:
+        return score - depth
+    if score == -1:
+        return score + depth
     #ismaximizing
-    if boolw == True:
-        bestscore = -999999
-        for i in range(3):
-            for j in range(3):
-                #is spot open
-                if board[i][j] == EMPTY:
-                    board[i][j] = player(board)
-                    score = Algo(board, False)
-                    board[i][j] = EMPTY
-                    bestscore = max(score, bestscore)
-                    print(bestscore)
+    if p == True:
+        bestscore = -1000
+        for a in actions(board):
+            print(actions(board))
+            #is spot open
+            board[a[0]][a[1]] = player(board)
+            bestscore = max(bestscore, Auxmm(board, depth+1, False))
+            board[a[0]][a[1]] = EMPTY
+            #print(bestscore)
         return bestscore
     #isminimizing
     else:
-        bestscore = 999999
-        for i in range(3):
-            for j in range(3):
-                #is spot open
-                if board[i][j] == EMPTY:
-                    board[i][j] = player(board)
-                    score = Algo(board, True)
-                    board[i][j] = EMPTY
-                    bestscore = min(score, bestscore)
+        bestscore = 1000
+        for a in actions(board):
+            #is spot open
+            board[a[0]][a[1]] = player(board)
+            bestscore = min(bestscore, Auxmm(board, depth+1, True))
+            board[a[0]][a[1]] = EMPTY
         return bestscore
