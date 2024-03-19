@@ -19,6 +19,7 @@ def initial_state():
             [EMPTY, EMPTY, EMPTY]]
 
 def numPieces(board):
+    # Calculates the number of X and O markers on the board
     xsum = 0
     osum = 0
     for column in board:
@@ -31,11 +32,13 @@ def numPieces(board):
     return xsum, osum
 
 def player(board):
+    # Returns whether the current player is placing an X or O
     x = numPieces(board)
     xsum = x[0]
     osum = x[1]
 
     return X if osum == xsum else O
+
 def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board. Also returns permutations of each set corresponding to winning condtions.
@@ -48,6 +51,7 @@ def actions(board):
                 moves.append((i,j))
 
     return moves
+
 def result(board, action):
     """
     Returns the result of the board corresponding to the action
@@ -67,11 +71,11 @@ def winner(board):
     if(winner==1):
         return X
     if(winner==-1):
-        return O
-    
+        return O   
     return None
 
 def isFull(board):
+    # Returns whether the board is full
     return (not(None in board[0]) and not(None in board[1]) and not(None in board[2]))
 
 def terminal(board):
@@ -80,7 +84,6 @@ def terminal(board):
     """
     if(isFull(board) or winner(board) != None):
         return True
-    
     return False
 
 def auxutility(board,sets):
@@ -141,6 +144,7 @@ def minimax(board):
 
 
 def value(board):
+    # Calculates the value of the board by iterating through all poaaible game states
     who = player(board)
     if terminal(board) == True:
         return utility(board),None
