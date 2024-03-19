@@ -135,14 +135,13 @@ def minimax(board):
     Returns the optimal action for the current player on the board.
     """
     #see whos playing
-    what = value(board)
+    bestmove = value(board)
     #bestmove = [0,0]
-    return what[1]
+    return bestmove[1]
 
 
 def value(board):
     who = player(board)
-    bestmove = None
     if terminal(board) == True:
         return utility(board),None
     # maximizing
