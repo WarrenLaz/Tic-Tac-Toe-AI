@@ -39,7 +39,7 @@ def player(board):
 def actions(board):
     """
     Returns set of all possible actions (i, j) available on the board. Also returns permutations of each set corresponding to winning condtions.
-    This will always be constant. O(1) complexity
+    This will always be constant.
     """
     moves = []
     for i in range(3):
@@ -48,14 +48,6 @@ def actions(board):
                 moves.append((i,j))
 
     return moves
-
-def auxwin():
-    return [[ [(0, 0), (0, 1), (0, 2)] , [(1, 0), (1, 1), (1, 2)], [(2, 0), (2, 1), (2, 2)] ], 
-            [ [(0, 0), (1, 0), (2, 0)], [(0, 1), (1, 1), (2, 1)] , [(0, 2), (1, 2), (2, 2) ] ] ,
-            [[(0,0), (1,1), (2,2)],[(0,2),(1,1), (2,0)]]]
-
-
-
 def result(board, action):
     """
     Returns the result of the board corresponding to the action
@@ -117,19 +109,20 @@ def utility(board):
     """
     Returns 1 if X has won the game, -1 if O has won, 0 otherwise.
     """
-    v = auxwin()[0] # vertical
-    h = auxwin()[1] # horizontal
-    d = auxwin()[2] # diagonal
+    auxwin = [[ [(0, 0), (0, 1), (0, 2)] , [(1, 0), (1, 1), (1, 2)], [(2, 0), (2, 1), (2, 2)] ], 
+            [ [(0, 0), (1, 0), (2, 0)], [(0, 1), (1, 1), (2, 1)] , [(0, 2), (1, 2), (2, 2) ] ] ,
+            [[(0,0), (1,1), (2,2)],[(0,2),(1,1), (2,0)]]]
+    
+    v = auxwin[0] # vertical
+    h = auxwin[1] # horizontal
+    d = auxwin[2] # diagonal
 
-    xsum = 0
-    osum = 0
-
-    vert = auxutility(board, v)
-    if vert != 0: return -1 if vert == -1 else 1
-    hor = auxutility(board, h)
-    if hor != 0: return -1 if hor == -1 else 1
-    diag = auxutility(board, d)
-    if diag != 0: return -1 if diag == -1 else 1
+    check = auxutility(board, v)
+    if check != 0: return -1 if check == -1 else 1
+    check = auxutility(board, h)
+    if check != 0: return -1 if check == -1 else 1
+    check = auxutility(board, d)
+    if check != 0: return -1 if check == -1 else 1
 
     return 0 
 
@@ -141,46 +134,37 @@ def minimax(board):
     """
     Returns the optimal action for the current player on the board.
     """
-    boardcopy = copy.deepcopy(board)
-    bestscore = -1000
-    bestmove = (0,0)
+    #see whos playing
+    what = value(board)
+    #bestmove = [0,0]
+    return what[1]
 
-    for a in actions(boardcopy):
-        boardcopy[a[0]][a[1]] = player(boardcopy)
-        score = Auxmm(boardcopy, 0, False)
-        board[a[0]][a[1]] == EMPTY
-        if score > bestscore:
-            bestscore = score
-            bestmove = (a[0],a[1])
 
-    return (bestmove)
-
-def Auxmm(board, depth, p):
-    score = utility(board)
-    #checking for winner
-    if score != 0:
-        return score
-    if score == 1:
-        return score - depth
-    if score == -1:
-        return score + depth
-    #ismaximizing
-    if p == True:
-        bestscore = -1000
+def value(board):
+    who = player(board)
+    bestmove = None
+    if terminal(board) == True:
+        return utility(board),None
+    # maximizing
+    if who == X:
+        v = -9999
         for a in actions(board):
-            print(actions(board))
-            #is spot open
             board[a[0]][a[1]] = player(board)
-            bestscore = max(bestscore, Auxmm(board, depth+1, False))
+            v2 = value(board)
             board[a[0]][a[1]] = EMPTY
-            #print(bestscore)
-        return bestscore
-    #isminimizing
-    else:
-        bestscore = 1000
+            if v2[0] > v:
+                v = v2[0]
+                bestmove = a
+        return v,bestmove
+
+    # minimizing
+    if who == O:
+        v = 9999
         for a in actions(board):
-            #is spot open
             board[a[0]][a[1]] = player(board)
-            bestscore = min(bestscore, Auxmm(board, depth+1, True))
+            v2 = value(board)
             board[a[0]][a[1]] = EMPTY
-        return bestscore
+            if v2[0] < v:
+                v = v2[0]
+                bestmove = a 
+        return v,bestmove
